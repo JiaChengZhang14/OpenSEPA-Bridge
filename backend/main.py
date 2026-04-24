@@ -60,7 +60,6 @@ async def debug_excel(file: UploadFile = File(...)):
         datos_estandarizados = df_final.to_dict(orient="records")
 
         return {
-            "archivo": file.filename,
             "mapeo_utilizado": mapeo,
             "total_filas": len(datos_estandarizados),
             "datos": datos_estandarizados # Devuelve el Excel ya "traducido"

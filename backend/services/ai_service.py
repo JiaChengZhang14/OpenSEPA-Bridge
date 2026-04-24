@@ -18,7 +18,7 @@ def map_columns_ai(muestra_datos):
     2. Beneficiario (Codigo del beneficiario, no se refiere al nombre)
     3. Nombre Beneficiario (Nombre de la persona o entidad beneficiaria)
     4. Nif (Número de Identificación Fiscal de la entidad beneficiaria)
-    5. IBAN Beneficiario (Numero de IBAN de la entidad beneficiaria)
+    5. IBAN Beneficiario (Numero de IBAN de la entidad beneficiaria, la cuenta del banco)
     6. Vencimiento (Fecha de vencimiento de pago)
     7. Importe (Importe del pago)
 
