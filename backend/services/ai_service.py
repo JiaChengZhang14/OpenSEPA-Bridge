@@ -1,45 +1,55 @@
+import time
+
 import ollama
 import json
 import re
 
-def map_columns_ai(datos_excel_completos):
+def map_columns_ai(muestra_datos):
+    """
+    Analiza una muestra de datos y devuelve un diccionario de mapeo.
+    """
     prompt = f"""
-    Eres un procesador de datos bancarios SEPA ultra preciso.
-    Tu objetivo es transformar una lista de registros desordenados en una lista estandarizada.
+    Eres un experto en normativa bancaria SEPA. 
+    Analiza estos datos de ejemplo de un Excel (primeras filas):
+    {muestra_datos}
 
-    DATOS DE ENTRADA (JSON):
-    {datos_excel_completos}
+    Tu tarea es identificar qué columna del Excel corresponde a cada uno de estos 7 campos:
+    1. Recibo Nº (Es el número del recibo/factura)
+    2. Beneficiario (Codigo del beneficiario, no se refiere al nombre)
+    3. Nombre Beneficiario (Nombre de la persona o entidad beneficiaria)
+    4. Nif (Número de Identificación Fiscal de la entidad beneficiaria)
+    5. IBAN Beneficiario (Numero de IBAN de la entidad beneficiaria)
+    6. Vencimiento (Fecha de vencimiento de pago)
+    7. Importe (Importe del pago)
 
-    CAMPOS DE DESTINO OBLIGATORIOS:
-    1. "Recibo Nº"
-    2. "Beneficiario" (Usa el nombre o código interno si existe)
-    3. "Nombre Beneficiario" (Nombre completo/Razón social)
-    4. "Nif" (Busca identificadores fiscales)
-    5. "IBAN Beneficiario" (Busca cuentas bancarias)
-    6. "Vencimiento" (Usa fechas de pago o requerimiento)
-    7. "Importe" (Usa cantidades numéricas)
+    TEN EN CUENTA: 
+    - Una columna del excel, no puede pertenecer a dos campos de los anteriormente mencionados. Debe ser EXCLUSIVAMENTE una columna por campo. Si ya se ha asignado una columna a un campo, esta no puede repetirse en otro campo. 
+    - Puede haber columnas que no pertenezcan a ninguno de los campos que requiero, puedes ignorar esas columnas. 
 
-    TAREA:
-    - Recorre cada registro de los datos de entrada.
-    - Mapea el contenido a los 7 campos de destino.
-    - Si un dato no existe para un campo, usa null.
-    - Limpia los nombres: quita símbolos raros en "Nombre Beneficiario".
-    - Asegúrate de que el "Importe" sea solo el número.
-
-    RESPUESTA:
-    Devuelve exclusivamente una lista de objetos JSON [{{...}}, {{...}}] con los 7 campos mencionados. No expliques nada.
+    Responde EXCLUSIVAMENTE con un JSON donde la clave es mi campo y el valor es el nombre de la columna original del Excel. Si no existe, usa null.
+    Ejemplo: {{"Recibo Nº": "Factura_ID", "Importe": "Total", ...}}
     """
 
     try:
+        
+        print("Procesando datos...")
+        
+        #INICIO UN TIMER 
+        init = time.perf_counter()
+        
         response = ollama.chat(model='llama3', messages=[
             {'role': 'user', 'content': prompt},
         ])
         
+        end = time.perf_counter()
+        print(f"⏱️ Llama3 ha tardado {end-init:.2f} segundos en responder.")
+        
         texto_ia = response['message']['content']
-        # Extraemos la lista JSON del texto de la IA
-        match = re.search(r'\[.*\]', texto_ia, re.DOTALL)
+        # Limpieza para extraer solo el JSON
+        match = re.search(r'\{.*\}', texto_ia, re.DOTALL)
         if match:
             return json.loads(match.group(0))
-        return {"error": "Formato de lista no detectado"}
+        return None
     except Exception as e:
-        return {"error": str(e)}
+        print(f"Error en IA: {e}")
+        return None
