@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-green: #007A55;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: #F5F6F5;
+  color: #1A2420;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F6F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DDE3E0;
+  border-radius: 2px;
+}
+
+/* Drop zone drag active state */
+.drop-active {
+  border-color: #007A55 !important;
+  background-color: rgba(0, 122, 85, 0.04) !important;
+}
